@@ -10,20 +10,20 @@ sealed class BaseFact {
     object Empty: BaseFact()
 }
 
-fun BaseFact.Fact.toFactState(): FactState = FactState(
+fun BaseFact.Fact.toFactUiState(): FactUiState = FactUiState(
     fact = this.text,
     length = this.length,
     isMultipleCats = this.text.contains("cats"),
     isShowLength = this.length > 100,
 )
 
-fun BaseFact.toNullableFaceState(): FactState? {
+fun BaseFact.toNullableFaceUiState(): FactUiState? {
     return when(this) {
         is BaseFact.Empty -> {
             null
         }
         is BaseFact.Fact -> {
-            toFactState()
+            toFactUiState()
         }
     }
 }

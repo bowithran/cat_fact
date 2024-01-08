@@ -43,4 +43,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.mockk.android)
 }
