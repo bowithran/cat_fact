@@ -16,7 +16,7 @@ class FactRepositoryImpl @Inject constructor(
             factApi.getFact().toFact()
         }.onSuccess {
             if (it is BaseFact.Fact) {
-                factDataStore.saveFact(it.text)
+                factDataStore.saveFact(it.text, it.length)
             }
             Result.success(it)
         }.onFailure {
@@ -27,7 +27,7 @@ class FactRepositoryImpl @Inject constructor(
     override suspend fun getSavedFacts(): List<BaseFact.Fact> {
         return try {
             factDataStore.fact.first().factList
-                .map { BaseFact.Fact(it) }
+                .map { BaseFact.Fact(it.text, it.length) }
                 .toList()
         } catch (e: Exception) {
             listOf()

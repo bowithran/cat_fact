@@ -13,6 +13,6 @@ fun FactResponse.toFact(): BaseFact {
     return if (fact.isEmpty()) {
         BaseFact.Empty
     } else {
-        BaseFact.Fact(fact)
+        BaseFact.Fact(fact, length)
     }
 }

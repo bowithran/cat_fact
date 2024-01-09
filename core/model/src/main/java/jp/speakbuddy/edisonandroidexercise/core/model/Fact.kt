@@ -3,9 +3,8 @@ package jp.speakbuddy.edisonandroidexercise.core.model
 sealed class BaseFact {
     data class Fact(
         val text: String,
-    ): BaseFact() {
-        val length: Int = text.length
-    }
+        val length: Int
+    ): BaseFact()
 
     object Empty: BaseFact()
 }

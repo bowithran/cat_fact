@@ -9,10 +9,15 @@ class FactDataStoreImpl @Inject constructor(
 ): FactDataStore {
     override val fact: Flow<SavedFacts> = store.data
 
-    override suspend fun saveFact(text: String) {
+    override suspend fun saveFact(text: String, length: Int) {
         store.updateData {
             it.toBuilder()
-                .addFact(text)
+                .addFact(
+                    Fact.newBuilder()
+                        .setText(text)
+                        .setLength(length)
+                    .build()
+                )
                 .build()
         }
     }
