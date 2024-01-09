@@ -4,6 +4,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import jp.speakbuddy.edisonandroidexercise.core.data.repository.FactRepository
 import jp.speakbuddy.edisonandroidexercise.core.data.repository.FactRepositoryImpl
+import jp.speakbuddy.edisonandroidexercise.core.datastore.Fact
 import jp.speakbuddy.edisonandroidexercise.core.datastore.FactDataStore
 import jp.speakbuddy.edisonandroidexercise.core.datastore.SavedFacts
 import jp.speakbuddy.edisonandroidexercise.core.model.BaseFact
@@ -30,14 +31,14 @@ class FactRepositoryTest {
             factApi.getFact()
         } returns FactResponse(fact = FACT_FROM_API, 20)
         coEvery {
-            factDataStore.saveFact(FACT_FROM_API)
+            factDataStore.saveFact(FACT_FROM_API, 20)
         } returns Unit
         factRepository = FactRepositoryImpl(
             factApi = factApi,
             factDataStore = factDataStore
         )
         assertTrue(factRepository.getFact().isSuccess)
-        assertEquals(factRepository.getFact().getOrNull(), BaseFact.Fact(FACT_FROM_API))
+        assertEquals(factRepository.getFact().getOrNull(), BaseFact.Fact(FACT_FROM_API, 20))
     }
 
     @Test
@@ -46,7 +47,7 @@ class FactRepositoryTest {
             factApi.getFact()
         } returns FactResponse(fact = "", 0)
         coEvery {
-            factDataStore.saveFact(FACT_FROM_API)
+            factDataStore.saveFact(FACT_FROM_API, 0)
         } returns Unit
         factRepository = FactRepositoryImpl(
             factApi = factApi,
@@ -58,13 +59,10 @@ class FactRepositoryTest {
 
     @Test
     fun getSavedFacts_001() = runTest {
-        val testList = listOf<String>(
-            "1: $FACT_FROM_LOCAL",
-            "2: $FACT_FROM_LOCAL",
-            "3: $FACT_FROM_LOCAL",
-            "4: $FACT_FROM_LOCAL",
-            "5: $FACT_FROM_LOCAL",
-        ).toMutableList()
+        val testList = mutableListOf<Fact>()
+        for (i in 0 until 5) {
+            Fact.newBuilder().setText("$i: $FACT_FROM_LOCAL").setLength(i).build()
+        }
         coEvery {
             factDataStore.fact
         } returns flow {
@@ -81,13 +79,14 @@ class FactRepositoryTest {
         )
 
         factRepository.getSavedFacts().forEachIndexed { index, fact ->
-            assertEquals(fact.text, testList[index])
+            assertEquals(fact.text, testList[index].text)
+            assertEquals(fact.length, testList[index].length)
         }
     }
 
     @Test
     fun getSavedFacts_002() = runTest {
-        val testList = mutableListOf<String>()
+        val testList = mutableListOf<Fact>()
         coEvery {
             factDataStore.fact
         } returns flow {
